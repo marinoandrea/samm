@@ -1,0 +1,10 @@
+{
+  "recommendations": [
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "Prisma.prisma",
+    "redhat.vscode-yaml",
+    "joshbolduc.commitlint",
+    "github.vscode-github-actions"
+  ]
+}
