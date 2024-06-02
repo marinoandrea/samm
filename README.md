@@ -1,5 +1,8 @@
 # Static Asset Management Microservice (SAMM)
 
+> [!WARNING]  
+> This is a Work In Progress (WIP), this software is not to be considered production-ready.
+
 This repository contains the implementation for a plug-and-play microservice
 that provides endpoints for basic static asset management. The microservice is
 intended to be deployed privately within the ecosystem and should not be exposed
@@ -27,4 +30,4 @@ The microservice implements the following functionalities:
   - Metadata and asset path on external bucket are stored in the service
     database
 
-- **Asset Download**:
+- **Asset Download**: TBD
