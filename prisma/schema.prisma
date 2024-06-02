@@ -1,0 +1,81 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum AssetVisibility {
+  /// The asset is publicly readable by anyone
+  PUBLIC
+  /// The asset is readable by any authenticated request
+  AUTHENTICATED
+  /// The asset is only readable by owner and sharers
+  PRIVATE
+  /// The asset was censored and only accessible when bypassing authz
+  CENSORED
+}
+
+enum StorageProvider {
+  AWS_S3
+  FIREBASE
+  SUPABASE
+  FILESYSTEM
+}
+
+model Asset {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  /// External identifier for a user that owns the asset
+  ownerId     String
+  /// Determines who can read the asset by default
+  visibility  AssetVisibility @default(PRIVATE)
+  /// File name
+  name        String?
+  /// URI for remote storage
+  path        String
+  /// MIME type of the asset
+  mimeType    String
+  /// Size of the asset in bytes
+  size        Int
+  /// Whether the asset has been deleted, for audit/recovery purposes.
+  isDeleted   Boolean         @default(false)
+  /// Asset version number
+  version     Int             @default(1)
+  /// Storage service provider
+  provider    StorageProvider
+  /// Preview image
+  thumbnailId String?         @unique
+
+  thumbnail Asset?       @relation("AssetThumbnail", fields: [thumbnailId], references: [id])
+  original  Asset?       @relation("AssetThumbnail")
+  shares    AssetShare[]
+
+  @@index([ownerId])
+  @@index([mimeType])
+}
+
+enum SharingMode {
+  /// User with this sharing mode can only read the asset
+  READ
+  /// User with this sharing mode can read and update the asset
+  READ_WRITE
+  /// User with this sharing mode can read, update, or delete the asset
+  READ_WRITE_DELETE
+}
+
+model AssetShare {
+  assetId  String
+  sharerId String
+  mode     SharingMode
+
+  asset Asset @relation(fields: [assetId], references: [id])
+
+  @@id([assetId, sharerId])
+  @@index([assetId])
+  @@index([sharerId])
+}
